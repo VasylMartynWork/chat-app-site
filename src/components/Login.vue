@@ -8,7 +8,7 @@ const userPassword = ref('');
 const emit = defineEmits(['user-authorizing']);
 
 function login(){
-	emit('user-authorizing', {type: "authorize", login: userLogin.value, password: userPassword.value});
+	emit('user-authorizing', {login: userLogin.value, password: userPassword.value});
 }
 
 </script>

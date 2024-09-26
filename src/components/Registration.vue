@@ -7,7 +7,7 @@ const userPasswordConfirm = ref('');
 
 const emit = defineEmits(['user-registration']);
 
-function login() {
+function register() {
 	emit('user-registration', { login: userLogin.value, password: userPassword.value, passwordConfirm: userPasswordConfirm.value });
 }
 
@@ -23,7 +23,7 @@ function login() {
 			<input type="password" placeholder="Підтвердіть пароль" class="px-2 py-1 w-4/5 rounded"
 				v-model="userPasswordConfirm" />
 		</div>
-		<button class="bg-blue-500 py-2 px-4 text-white rounded-lg" @click="login">Зареєструватись</button>
+		<button class="bg-blue-500 py-2 px-4 text-white rounded-lg" @click="register">Зареєструватись</button>
 		<div class="flex flex-col items-center">
 			<span class="text-sm">Маєте акаунт?</span>
 			<RouterLink class="text-sm text-blue-500 hover:underline" :to="`/`">Авторизуйтесь</RouterLink>

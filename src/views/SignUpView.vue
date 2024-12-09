@@ -1,15 +1,15 @@
 <script setup>
-import Registration from '@/components/Registration.vue';
+import SignUp from '@/components/SignUp.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
-async function register(userData){
+async function signUp(userData){
 	if(userData.password !== userData.passwordConfirm) {
 		alert('Помилка! Паролі не співпадають');
 		return;
 	}
 
-	const res = await fetch("http://localhost:3001/api/v1/auth/register", {
+	const res = await fetch("http://localhost:3001/api/v1/auth/sign-up", {
 		headers: {
 			"Content-Type": "application/json"
 		},
@@ -24,12 +24,12 @@ async function register(userData){
 
 	alert('Успішна реєстрація!');
 
-	router.push('/');
+	router.push('/sign-in');
 }
 </script>
 
 <template>
 	<div class="flex flex-col items-center justify-center h-screen">
-		<Registration @user-registration="register"/>
+		<SignUp @user-registration="signUp"/>
 	</div>
 </template>

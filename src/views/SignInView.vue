@@ -1,10 +1,10 @@
 <script setup>
-import Login from '@/components/Login.vue';
+import SignIn from '@/components/SignIn.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
-async function authorize(userData) {
-	const res = await fetch("http://localhost:3001/api/v1/auth/login", {
+async function signIn(userData) {
+	const res = await fetch("http://localhost:3001/api/v1/auth/sign-in", {
 		headers: {
 			"Content-Type": "application/json"
 		},
@@ -44,6 +44,6 @@ async function authorize(userData) {
 
 <template>
 	<div class="flex flex-col items-center justify-center h-screen">
-		<Login @user-authorizing="authorize" />
+		<SignIn @user-authorizing="signIn" />
 	</div>
 </template>

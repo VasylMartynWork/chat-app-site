@@ -1,27 +1,26 @@
 <script setup>
-import Messages from '@/components/Messages.vue';
-import UserList from '@/components/UserList.vue';
+import Messages from '@/components/Chat/Messages.vue';
+import UserList from '@/components/Chat/RoomList.vue';
+import WebSocketSingleton from '../utility/WebSocketSingleton';
 import { ref } from 'vue';
 
-const wss = WebSocketSingleton("ws://localhost:3003");
+const wss = WebSocketSingleton("ws://localhost:3003").getInstance();
 
-const userList = ref([]);
+const roomList = ref([]);
 
-// wss.getInstance().send(userData);
+wss.onmessage = (ev) => {
+	const data = JSON.parse(ev.data);
 
-wss.getInstance().onmessage((ev) => {
-	const data = JSON.parse(ev);
-
-	if (data.type === "sendUserList") {
-		userList.value = data.users;
+	if (data.type === "sendRooms") {
+		roomList.value = data.rooms;
 	}
-})
+};
 
 </script>
 
 <template>
 	<div class="flex">
-		<UserList />
+		<UserList :rooms="roomList" />
 		<Messages/>
 	</div>
 </template>

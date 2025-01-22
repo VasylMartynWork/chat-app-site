@@ -10,10 +10,9 @@ const roomList = ref([]);
 
 const messages = ref([]);
 
-const room = ref({
-	name: "",
-	members: null
-})
+const room = ref("");
+
+const message = ref("");
 
 wss.onmessage = (ev) => {
 	const data = JSON.parse(ev.data);
@@ -25,10 +24,14 @@ wss.onmessage = (ev) => {
 	if (data.type === "userJoined") {
 		messages.value.push(`${data.user} was joined to the room`);
 	}
+
+	if (data.type === "messageSent") {
+		messages.value.push(`${data.user}: ${data.message}`);
+	}
 };
 
 function selectRoom(selectedRoom) {
-	room.value.name = selectedRoom;
+	room.value = selectedRoom;
 
 	wss.send(JSON.stringify({
 		type: "joinRoom",
@@ -36,20 +39,34 @@ function selectRoom(selectedRoom) {
 	}));
 }
 
+function sendMessage() {
+	if(message.value.trim().length === 0) {
+		return;
+	}
+
+	wss.send(JSON.stringify({
+		type: "sendMessage",
+		room: room.value,
+		message: message.value,
+	}))
+	message.value = "";
+}
+
 </script>
 
 <template>
 	<div class="flex h-screen w-full">
 		<RoomList :rooms="roomList" @room-selected="selectRoom" />
-		<div v-if="room.name" class="flex flex-col justify-between pt-4 w-full">
+		<div v-if="room" class="flex flex-col h-full pt-4 w-full">
 			<div class="w-full border-b-4 h-10">
-				<h2 class="text-2xl font-bold pl-5">{{ room.name }}</h2>
-				<p>{{ room.members }}</p>
+				<h2 class="text-2xl font-bold pl-5">{{ room }}</h2>
 			</div>
-			<Messages :messages="messages" />
-			<div class="flex justify-center">
-				<input type="text" class="w-1/2 border-2 border-gray-300 rounded-lg p-2" />
-				<button class="bg-blue-500 text-white p-2 rounded-lg">Send</button>
+			<div class="flex-grow overflow-y-auto">
+				<Messages :messages="messages" />
+			</div>
+			<div class="flex justify-center p-4 border-t-4">
+				<input v-model="message" type="text" class="w-1/2 border-y-2 border-l-2 border-gray-300 rounded-s-lg p-2" />
+				<button @click="sendMessage" class="bg-blue-500 text-white p-2 rounded-e-lg">Send</button>
 			</div>
 		</div>
 	</div>

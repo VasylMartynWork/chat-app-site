@@ -1,8 +1,8 @@
-function WebSocketSingleton(url) {
-  let instance;
+let instance;
 
+function WebSocketSingleton(url) {
   function createInstance() {
-    const ws = new WebSocket(url);
+    const ws = new WebSocket(url, localStorage.getItem("userId"));
     ws.onopen = () => {
       console.log("WebSocket connection established.");
     };

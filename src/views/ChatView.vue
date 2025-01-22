@@ -22,8 +22,8 @@ wss.onmessage = (ev) => {
 		roomList.value = data.rooms;
 	}
 
-	if (data.type === "roomJoined") {
-		messages.value.push("New user was joined to the room");
+	if (data.type === "userJoined") {
+		messages.value.push(`${data.user} was joined to the room`);
 	}
 };
 
@@ -32,7 +32,7 @@ function selectRoom(selectedRoom) {
 
 	wss.send(JSON.stringify({
 		type: "joinRoom",
-		room: selectedRoom
+		room: selectedRoom,
 	}));
 }
 

@@ -1,6 +1,7 @@
 <script setup>
 import SignIn from '@/components/SignIn.vue';
 import { useRouter } from 'vue-router';
+import WebSocketSingleton from '../utility/WebSocketSingleton';
 const router = useRouter();
 
 async function signIn(userData) {
@@ -17,6 +18,12 @@ async function signIn(userData) {
 		alert('При авторизації виникла помилка');
 		return;
 	}
+
+	const resBody = await res.json();
+
+	localStorage.setItem('userId', resBody.userId);
+
+	WebSocketSingleton("ws://localhost:3003").getInstance();
 	
 	alert('Успішна авторизація!');
 

@@ -10,6 +10,6 @@ const emit = defineEmits([
 
 <template>
 	<ul>
-		<li v-for="message in props.messages">{{ message }}</li>
+		<li v-for="message in props.messages" class="text-black">{{ message }}</li>
 	</ul>
 </template>

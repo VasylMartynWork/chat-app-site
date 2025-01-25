@@ -50,7 +50,7 @@ async function signIn(userData) {
 </script>
 
 <template>
-	<div class="flex flex-col items-center justify-center h-screen">
+	<div class="flex flex-col items-center justify-center h-screen bg-white">
 		<SignIn @user-authorizing="signIn" />
 	</div>
 </template>

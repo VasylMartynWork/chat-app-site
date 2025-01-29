@@ -25,7 +25,11 @@ wss.onmessage = (ev) => {
 	}
 
 	if (data.type === "userJoined") {
-		messages.value.push(`${data.user} was joined to the room`);
+		messages.value.push(`${data.user} has joined to the room`);
+	}
+
+	if (data.type === "userLeft") {
+		messages.value.push(`${data.user} has left room`);
 	}
 
 	if (data.type === "messageSent") {
@@ -38,12 +42,19 @@ wss.onmessage = (ev) => {
 };
 
 function selectRoom(selectedRoom) {
-	room.value = selectedRoom;
+	if (room.value) {
+		wss.send(JSON.stringify({
+			type: "changeRoom",
+			room: selectedRoom,
+		}))
+	} else {
+		wss.send(JSON.stringify({
+			type: "joinRoom",
+			room: selectedRoom,
+		}));
+	}
 
-	wss.send(JSON.stringify({
-		type: "joinRoom",
-		room: selectedRoom,
-	}));
+	room.value = selectedRoom;
 }
 
 function sendMessage() {

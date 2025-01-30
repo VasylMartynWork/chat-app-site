@@ -13,7 +13,9 @@ const messages = ref([]);
 
 const room = ref("");
 
-const message = ref("");
+const usersOnline = ref(0);
+
+const messageForSending = ref("");
 
 const isOpenCreatePublicRoomModal = ref(false);
 
@@ -26,10 +28,12 @@ wss.onmessage = (ev) => {
 
 	if (data.type === "userJoined") {
 		messages.value.push(`${data.user} has joined to the room`);
+		usersOnline.value = data.usersOnline;
 	}
 
 	if (data.type === "userLeft") {
 		messages.value.push(`${data.user} has left room`);
+		usersOnline.value = data.usersOnline;
 	}
 
 	if (data.type === "messageSent") {
@@ -38,6 +42,16 @@ wss.onmessage = (ev) => {
 
 	if (data.type === "roomCreated") {
 		roomList.value.unshift(data.roomName);
+	}
+
+	if (data.type === "roomJoined") {
+		const convertedMessages = data.roomData.messages.map((message) => {
+			return message.user ? `${message.user}: ${message.content}` : message.content;
+		})
+
+		room.value = data.roomName;
+		messages.value = convertedMessages;
+		usersOnline.value = data.roomData.usersOnline;
 	}
 };
 
@@ -53,8 +67,6 @@ function selectRoom(selectedRoom) {
 			room: selectedRoom,
 		}));
 	}
-
-	room.value = selectedRoom;
 }
 
 function sendMessage() {
@@ -99,14 +111,15 @@ function createPublicRoom(roomName) {
 		</div>
 
 		<div v-if="room" class="flex flex-col h-full pt-4 w-full">
-			<div class="w-full border-b-4 h-10">
+			<div class="flex flex-col w-full border-b-4 h-10">
 				<h2 class="text-2xl font-bold pl-5 text-black">{{ room }}</h2>
+				<p>{{ usersOnline }} users online</p>
 			</div>
 			<div class="flex-grow overflow-y-auto">
 				<Messages :messages="messages" />
 			</div>
 			<div class="flex justify-center p-4 border-t-4">
-				<input v-model="message" type="text"
+				<input v-model="messageForSending" type="text"
 					class="w-1/2 border-y-2 border-l-2 border-gray-300 outline-0 bg-white rounded-s-lg p-2 text-black" />
 				<button @click="sendMessage" class="bg-blue-500 text-white p-2 rounded-e-lg">Send</button>
 			</div>

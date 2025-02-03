@@ -1,11 +1,16 @@
 <script setup>
-import SignUp from '@/components/SignUp.vue';
 import { useRouter } from 'vue-router';
+
+import { useToast } from 'primevue/usetoast';
+
+import SignUp from '../components/SignUp.vue';
+
 const router = useRouter();
+const toast = useToast();
 
 async function signUp(userData){
 	if(userData.password !== userData.passwordConfirm) {
-		alert('Помилка! Паролі не співпадають');
+		toast.add({ severity: 'error', summary: 'Error', detail: 'Passwords do not match', life: 4000 });
 		return;
 	}
 
@@ -18,18 +23,20 @@ async function signUp(userData){
 	});
 
 	if(res.status === 500){
-		alert('При реєстрації виникла помилка');
+		toast.add({ severity: 'error', summary: 'Error', detail: 'An error has occured', life: 4000 });
 		return;
 	}
 
-	alert('Успішна реєстрація!');
+	toast.add({ severity: "success", summary: 'Success', detail: 'Registration is succesful', life: 4000 });
 
-	router.push('/sign-in');
+	setTimeout(() => {
+		router.push('/sign-in');
+	}, 4000);
 }
 </script>
 
 <template>
-	<div class="flex flex-col items-center justify-center h-screen">
+	<div class="flex flex-col items-center justify-center h-screen bg-white">
 		<SignUp @user-registration="signUp"/>
 	</div>
 </template>

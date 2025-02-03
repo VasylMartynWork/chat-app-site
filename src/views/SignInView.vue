@@ -1,8 +1,13 @@
 <script setup>
-import SignIn from '@/components/SignIn.vue';
 import { useRouter } from 'vue-router';
+
+import { useToast } from 'primevue/usetoast';
+
+import SignIn from '../components/SignIn.vue';
 import WebSocketSingleton from '../utility/WebSocketSingleton';
+
 const router = useRouter();
+const toast = useToast();
 
 async function signIn(userData) {
 	const res = await fetch("http://localhost:3001/api/v1/auth/sign-in", {
@@ -15,7 +20,7 @@ async function signIn(userData) {
 	});
 
 	if (res.status === 500 || res.status === 401) {
-		alert('При авторизації виникла помилка');
+		toast.add({ severity: 'error', summary: 'Error', detail: 'Invalid username or password', life: 4000 });
 		return;
 	}
 
@@ -23,29 +28,11 @@ async function signIn(userData) {
 
 	localStorage.setItem('userId', resBody.userId);
 
-	WebSocketSingleton("ws://localhost:3003").getInstance();
-	
-	alert('Успішна авторизація!');
+	toast.add({ severity: "success", summary: 'Success', detail: 'Authorization is succesful', life: 4000 });
 
-	router.push('/');
-
-	// const wss = WebSocketSingleton("ws://localhost:3003");
-
-	// wss.getInstance().send(userData);
-
-	// wss.getInstance().onmessage((ev) => {
-	// 	const data = JSON.parse(ev);
-
-	// 	if (data.type === "authorize") {
-	// 		if (data.valid === false) {
-	// 			wss.closeInstance();
-	// 			alert('Помилка! Логін або пароль невірні');
-	// 		}
-	// 		else if (data.valid === true){
-	// 			router.push("/chat");
-	// 		}
-	// 	}
-	// })
+	setTimeout(() => {
+		router.push('/');
+	}, 4000);
 }
 </script>
 

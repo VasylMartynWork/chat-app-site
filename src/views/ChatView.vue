@@ -1,9 +1,12 @@
 <script setup>
-import Messages from '@/components/Chat/Messages.vue';
-import RoomList from '@/components/Chat/RoomList.vue';
-import CreateRoomModal from '@/components/Chat/CreateRoomModal.vue';
-import WebSocketSingleton from '../utility/WebSocketSingleton';
 import { ref } from 'vue';
+
+import { useToast } from 'primevue/usetoast';
+
+import Messages from '../components/Chat/Messages.vue';
+import RoomList from '../components/Chat/RoomList.vue';
+import CreateRoomModal from '../components/Chat/CreateRoomModal.vue';
+import WebSocketSingleton from '../utility/WebSocketSingleton';
 
 const wss = WebSocketSingleton("ws://localhost:3003").getInstance();
 
@@ -18,6 +21,8 @@ const usersOnline = ref(0);
 const messageForSending = ref("");
 
 const isOpenCreatePublicRoomModal = ref(false);
+
+const toast = useToast();
 
 wss.onmessage = (ev) => {
 	const data = JSON.parse(ev.data);
@@ -42,6 +47,10 @@ wss.onmessage = (ev) => {
 
 	if (data.type === "roomCreated") {
 		roomList.value.unshift(data.roomName);
+	}
+
+	if (data.type === "roomExists") {
+		toast.add({ severity: 'error', summary: 'Error', detail: 'Room already exists', life: 4000 });
 	}
 
 	if (data.type === "roomJoined") {
@@ -70,16 +79,16 @@ function selectRoom(selectedRoom) {
 }
 
 function sendMessage() {
-	if (message.value.trim().length === 0) {
+	if (messageForSending.value.trim().length === 0) {
 		return;
 	}
 
 	wss.send(JSON.stringify({
 		type: "sendMessage",
 		room: room.value,
-		message: message.value,
+		message: messageForSending.value,
 	}))
-	message.value = "";
+	messageForSending.value = "";
 }
 
 function openCloseCreatePublicRoomModal() {
@@ -111,9 +120,9 @@ function createPublicRoom(roomName) {
 		</div>
 
 		<div v-if="room" class="flex flex-col h-full pt-4 w-full">
-			<div class="flex flex-col w-full border-b-4 h-10">
-				<h2 class="text-2xl font-bold pl-5 text-black">{{ room }}</h2>
-				<p>{{ usersOnline }} users online</p>
+			<div class="flex flex-col w-full border-b-4 pl-5">
+				<h2 class="text-2xl font-bold text-black">{{ room }}</h2>
+				<p class="text-black">{{ usersOnline }} users online</p>
 			</div>
 			<div class="flex-grow overflow-y-auto">
 				<Messages :messages="messages" />

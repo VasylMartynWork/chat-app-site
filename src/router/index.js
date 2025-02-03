@@ -23,11 +23,6 @@ const router = createRouter({
 			component: ChatView,
 			beforeEnter: verifyToken
 		}
-		// {
-		// 	path: '/main',
-		// 	name: 'main',
-		// 	component: ValidatedView
-		// }
 	]
 });
 

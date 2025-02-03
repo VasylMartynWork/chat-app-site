@@ -66,6 +66,10 @@ wss.onmessage = (ev) => {
 
 function selectRoom(selectedRoom) {
 	if (room.value) {
+		if(room.value === selectedRoom) {
+			return;
+		}
+
 		wss.send(JSON.stringify({
 			type: "changeRoom",
 			room: selectedRoom,
